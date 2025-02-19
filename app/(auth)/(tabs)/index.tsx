@@ -9,6 +9,7 @@ import { fetchClocking } from "@/actions/UserActions";
 import React from "react";
 import { useRouter } from "expo-router";
 import { useSession } from "@/shared/ctx";
+import UserCard from "@/components/UserCard";
 
 const HomeScreen: React.FC = () => {
   const colorScheme = useColorScheme();
@@ -23,11 +24,10 @@ const HomeScreen: React.FC = () => {
       session?.user?.token
     );
     
-    if (clockingStatus.status && clockingStatus.data) {
+    if (clockingStatus?.data?.status && clockingStatus?.data?.result) {
       // Check for data
       addClockingData(clockingStatus.data?.result as any);
     } else if (!clockingStatus.status) {
-      console.error(clockingStatus.msg);
       Alert.alert(
         "Error",
         clockingStatus.msg || "Failed to fetch clocking data."
@@ -61,13 +61,13 @@ const HomeScreen: React.FC = () => {
         Alert.alert('Error', 'Authentication Failed'); // Optional alert
       }
     } catch (error: any) {
-      console.error("Authentication failed:", error);
       Alert.alert("Error", "Authentication failed: " + error.message);
     }
   };
 
   return (
     <View style={styles.container}>
+      <UserCard />
       <View style={styles.flexBox}>
         <Column
           number={

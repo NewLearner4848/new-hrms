@@ -1,10 +1,14 @@
-import { Text } from 'react-native';
-import { Redirect, Stack } from 'expo-router';
+import { Text, useColorScheme } from "react-native";
+import { Redirect, Stack } from "expo-router";
 
-import { useSession } from '@/shared/ctx';
+import { useSession } from "@/shared/ctx";
+import Colors from "@/constants/Colors";
+import HeaderLogo from "@/components/HeaderLogo";
+import LogoutButton from "@/components/LogoutButton";
 
 export default function AppLayout() {
   const { session, isLoading } = useSession();
+  const colorScheme = useColorScheme();
 
   if (isLoading) {
     return <Text>Loading...</Text>;
@@ -19,9 +23,22 @@ export default function AppLayout() {
   }
 
   return (
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+    <Stack
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: Colors[colorScheme ?? "light"].tint,
+        },
+        headerTintColor: Colors[colorScheme ?? "light"].text,
+        headerTitleStyle: {
+          fontWeight: "bold",
+        },
+        headerTitle: "",
+        headerLeft: () => <HeaderLogo />,
+        headerRight: () => <LogoutButton />,
+      }}
+    >
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="modal" options={{ presentation: "modal" }} />
     </Stack>
-  )
+  );
 }

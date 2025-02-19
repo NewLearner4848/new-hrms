@@ -28,7 +28,7 @@ const Button: React.FC<ButtonProps> = ({ handlePress, text, backgroundColor, sty
 
 const styles = StyleSheet.create({
     button: {
-        padding: 10,
+        padding: 15,
         borderRadius: 5,
         alignItems: 'center',
         marginBottom: 30,

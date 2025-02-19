@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { StyleSheet, Alert, Platform } from "react-native";
 import { Text, View } from "@/components/Themed";
-import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
+import { CameraView, useCameraPermissions } from "expo-camera";
 import * as Location from "expo-location";
 import { ClockInOut } from "@/actions/UserActions";
 import Loader from "@/components/Loader";
@@ -11,7 +11,6 @@ import Button from "@/components/Button";
 
 const ClockIn: React.FC = () => {
   const cameraRef = useRef<CameraView>(null);
-  const [facing, setFacing] = useState<CameraType>("front");
   const [permission, requestPermission] = useCameraPermissions();
   const [location, setLocation] =
     useState<Location.LocationObjectCoords | null>(null);
@@ -46,7 +45,14 @@ const ClockIn: React.FC = () => {
   }, []);
 
   if (!permission) {
-    return <View />;
+    return (
+      <View style={styles.container}>
+        <Text style={styles.message}>
+          We need your permission to use the camera.
+        </Text>
+        <Button handlePress={requestPermission} text="Grant Permission" />
+      </View>
+    );
   }
 
   if (!permission.granted) {
@@ -62,10 +68,6 @@ const ClockIn: React.FC = () => {
 
   const handleCancelPress = () => {
     router.back();
-  };
-
-  const toggleCameraFacing = () => {
-    setFacing((current) => (current === "back" ? "front" : "back"));
   };
 
   const handleSubmitPress = async () => {
@@ -88,11 +90,11 @@ const ClockIn: React.FC = () => {
           token: session?.user?.token,
         });
 
-        if (response?.status) {
-          Alert.alert("Success", response?.msg || "Clocking successful.");
+        if (response?.data?.status) {
+          Alert.alert("Success", response?.data?.msg || "Clocking successful.");
           router.back();
         } else {
-          Alert.alert("Error", response?.msg || "Clocking failed.");
+          Alert.alert("Error", response?.data?.msg || "Clocking failed.");
         }
       }
     } catch (error: any) {
@@ -106,7 +108,7 @@ const ClockIn: React.FC = () => {
     <View style={styles.container}>
       {/* Camera View */}
       <View style={styles.cameraContainer}>
-        <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
+        <CameraView style={styles.camera} facing={"front"} ref={cameraRef}>
         </CameraView>
       </View>
 

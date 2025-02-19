@@ -37,9 +37,11 @@ interface UserLocation {
         longitude: number;
     },
     dept_head: string;
+    status: boolean;
 }
 
 interface ClockingData {
+    status: boolean;
     result: any;
 }
 
@@ -84,7 +86,7 @@ const fetchLocation = async (userId: number, token: string): Promise<ApiResponse
 export const ClockInOut = async ({ image, type, latitude, longitude, user, token }: ClockInOutParams): Promise<ApiResponse<any>> => {
     const userLocationResponse = await fetchLocation(user, token);
 
-    if (!userLocationResponse.status) {
+    if (!userLocationResponse?.data?.status) {
         return userLocationResponse;
     }
 

@@ -17,14 +17,14 @@ const Column: React.FC<ColumnProps> = ({ number, text }) => {
       <Text
         numberOfLines={2}
         adjustsFontSizeToFit
-        style={[styles.bigFont, isDarkMode && styles.bigFontDark]}
+        style={[styles.bigFont, { color: Colors[colorScheme ?? "light"].text }]}
       >
         {String(number)}
       </Text>
       <Text
         numberOfLines={1}
         adjustsFontSizeToFit
-        style={[styles.para, isDarkMode && styles.paraDark]}
+        style={[styles.para, { color: Colors[colorScheme ?? "light"].text }]}
       >
         {text}
       </Text>
@@ -49,18 +49,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontWeight: "bold",
     textAlign: "center",
-    color: "black", // Light mode text color
-  },
-  bigFontDark: {
-    color: "white", // Dark mode text color
   },
   para: {
     fontSize: 12,
     textAlign: "center",
-    color: "#3e3e3e", // Light mode text color
-  },
-  paraDark: {
-    color: "#ddd", // Dark mode text color (or a suitable alternative)
   },
 });
 
