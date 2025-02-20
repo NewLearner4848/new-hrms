@@ -1,13 +1,13 @@
+import Colors from '@/constants/Colors';
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View, useColorScheme } from 'react-native';
 
 const Loader: React.FC = () => {
     const colorScheme = useColorScheme();
-    const isDarkMode = colorScheme === 'dark';
 
     return (
         <View style={styles.loader}>
-            <ActivityIndicator size="large" color={isDarkMode ? '#fff' : '#972928'} /> {/* Conditional color */}
+            <ActivityIndicator size={100} color={Colors[colorScheme ?? "light"].text} /> {/* Conditional color */}
         </View>
     );
 };

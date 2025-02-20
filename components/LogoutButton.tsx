@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, StyleProp, ViewStyle, useColorScheme } from 'react-native';
+import { TouchableOpacity, StyleProp, ViewStyle, useColorScheme, Alert } from 'react-native';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useSession } from '@/shared/ctx';
 import Colors from '@/constants/Colors';
@@ -13,7 +13,21 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({ style }) => {
     const colorScheme = useColorScheme();
 
     const handleLogout = () => {
-        signOut();
+        Alert.alert(
+            "Confirm Logout",
+            "Are you sure you want to logout?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                {
+                    text: "Logout",
+                    onPress: () => signOut(),
+                    style: "destructive"
+                }
+            ]
+        );
     };
 
     return (

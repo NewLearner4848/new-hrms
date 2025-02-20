@@ -1,37 +1,56 @@
-import { StyleSheet, Alert, useColorScheme } from "react-native";
-import { Text, View } from "@/components/Themed";
+import {
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+  useColorScheme,
+} from "react-native";
+import { View } from "@/components/Themed";
 import Column from "@/components/Column";
 import Button from "@/components/Button";
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from "@react-navigation/native";
 import { reFormatDateTime } from "@/shared/utils";
 import * as LocalAuthentication from "expo-local-authentication";
 import { fetchClocking } from "@/actions/UserActions";
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import { useSession } from "@/shared/ctx";
 import UserCard from "@/components/UserCard";
+import Toast from 'react-native-toast-message';
 
 const HomeScreen: React.FC = () => {
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === "dark";
-
+  const [refreshing, setRefreshing] = useState(false);
   const { session, addClockingData } = useSession();
   const router = useRouter();
 
   const fetchClockingData = async () => {
-    const clockingStatus = await fetchClocking(
-      session?.user?.user_id,
-      session?.user?.token
-    );
-    
-    if (clockingStatus?.data?.status && clockingStatus?.data?.result) {
-      // Check for data
-      addClockingData(clockingStatus.data?.result as any);
-    } else if (!clockingStatus.status) {
-      Alert.alert(
-        "Error",
-        clockingStatus.msg || "Failed to fetch clocking data."
+    try {
+      setRefreshing(true);
+      const clockingStatus = await fetchClocking(
+        session?.user?.user_id,
+        session?.user?.token
       );
+
+      if (clockingStatus?.status) {
+        if (clockingStatus?.data?.status && clockingStatus?.data?.result) {
+          addClockingData(clockingStatus.data?.result as any);
+        } else {
+          addClockingData(null);
+        }
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: clockingStatus.msg || 'Failed to fetch clocking data.',
+          position: 'bottom',
+          visibilityTime: 3000,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching clocking data:", error);
+    } finally {
+      setRefreshing(false);
     }
   };
 
@@ -55,62 +74,84 @@ const HomeScreen: React.FC = () => {
           : "clock_out";
 
       if (success) {
-        router.push({ pathname: "/(auth)/(tabs)/two", params: { clockInOrOut } });
+        router.push({
+          pathname: "/(auth)/(tabs)/punch",
+          params: { clockInOrOut },
+        });
       } else {
-        // router.push({ pathname: "/(auth)/(tabs)/two", params: { clockInOrOut } });
-        Alert.alert('Error', 'Authentication Failed'); // Optional alert
+        Toast.show({
+          type: 'error',
+          text1: 'Authentication Failed',
+          position: 'bottom',
+          visibilityTime: 3000,
+        });
       }
     } catch (error: any) {
-      Alert.alert("Error", "Authentication failed: " + error.message);
+      Toast.show({
+        type: 'error',
+        text1: 'Authentication Failed',
+        text2: error.message,
+        position: 'bottom',
+        visibilityTime: 3000,
+      });
     }
   };
 
   return (
     <View style={styles.container}>
-      <UserCard />
-      <View style={styles.flexBox}>
-        <Column
-          number={
-            session?.clockData
-              ? session?.clockData.clock_in
-                ? reFormatDateTime(session?.clockData.clock_in)
-                : "00:00"
-              : "00:00"
-          }
-          text={"Last Clock In Time"}
-        />
-        <Column
-          number={
-            session?.clockData
-              ? session?.clockData.clock_out
-                ? reFormatDateTime(session?.clockData.clock_out)
-                : "00:00"
-              : "00:00"
-          }
-          text={"Last Clock Out Time"}
-        />
-      </View>
-      <Button
-        backgroundColor={
-          !session?.clockData ||
-          !session?.clockData.clock_in ||
-          (session?.clockData.clock_in && session?.clockData.clock_out)
-            ? isDarkMode
-              ? "#005000"
-              : "green"
-            : isDarkMode
-            ? "#8b0000"
-            : "red"
-        } // Conditional colors
-        text={
-          !session?.clockData ||
-          !session?.clockData.clock_in ||
-          (session?.clockData.clock_in && session?.clockData.clock_out)
-            ? "Clock In"
-            : "Clock Out"
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={fetchClockingData}
+          />
         }
-        handlePress={handleAuthentication}
-      />
+      >
+        <UserCard />
+        <View style={styles.flexBox}>
+          <Column
+            number={
+              session?.clockData
+                ? session?.clockData.clock_in
+                  ? reFormatDateTime(session?.clockData.clock_in)
+                  : "00:00"
+                : "00:00"
+            }
+            text={"Last Clock In Time"}
+          />
+          <Column
+            number={
+              session?.clockData
+                ? session?.clockData.clock_out
+                  ? reFormatDateTime(session?.clockData.clock_out)
+                  : "00:00"
+                : "00:00"
+            }
+            text={"Last Clock Out Time"}
+          />
+        </View>
+        <Button
+          backgroundColor={
+            !session?.clockData ||
+            !session?.clockData.clock_in ||
+            (session?.clockData.clock_in && session?.clockData.clock_out)
+              ? isDarkMode
+                ? "#005000"
+                : "green"
+              : isDarkMode
+              ? "#8b0000"
+              : "red"
+          } // Conditional colors
+          text={
+            !session?.clockData ||
+            !session?.clockData.clock_in ||
+            (session?.clockData.clock_in && session?.clockData.clock_out)
+              ? "Clock In"
+              : "Clock Out"
+          }
+          handlePress={handleAuthentication}
+        />
+      </ScrollView>
     </View>
   );
 };

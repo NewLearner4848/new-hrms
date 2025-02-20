@@ -2,6 +2,8 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
+import { StatusBar } from 'expo-status-bar';
+import Toast from 'react-native-toast-message';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -37,7 +39,12 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutNav />;
+  return (
+    <>
+      <RootLayoutNav />
+      <Toast />
+    </>
+  );
 }
 import { Slot } from "expo-router";
 import { SessionProvider } from "@/shared/ctx";
@@ -46,6 +53,7 @@ function RootLayoutNav() {
   return (
     <SessionProvider>
         <Slot />
+        <StatusBar translucent = {true} />
     </SessionProvider>
   );
 }

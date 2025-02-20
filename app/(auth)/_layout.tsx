@@ -38,7 +38,6 @@ export default function AppLayout() {
       }}
     >
       <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="modal" options={{ presentation: "modal" }} />
     </Stack>
   );
 }

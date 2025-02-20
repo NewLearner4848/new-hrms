@@ -13,7 +13,7 @@ export default function Layout() {
         }}
       >
         <Stack.Screen name="index" options={{ title: "Home" }} />
-        <Stack.Screen name="two" options={{ title: "Clock In/Out" }} />
+        <Stack.Screen name="punch" options={{ title: "Clock In/Out" }} />
       </Stack>
       <Footer />
     </View>

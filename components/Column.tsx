@@ -10,7 +10,6 @@ interface ColumnProps {
 
 const Column: React.FC<ColumnProps> = ({ number, text }) => {
   const colorScheme = useColorScheme();
-  const isDarkMode = colorScheme === "dark";
 
   return (
     <View style={[styles.column, { backgroundColor: Colors[colorScheme ?? "light"].tint }]}>

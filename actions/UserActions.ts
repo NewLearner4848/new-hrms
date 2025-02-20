@@ -42,7 +42,8 @@ interface UserLocation {
 
 interface ClockingData {
     status: boolean;
-    result: any;
+    result?: any | null;
+    msg?: string | null;
 }
 
 interface LeaveData {
@@ -94,8 +95,8 @@ export const ClockInOut = async ({ image, type, latitude, longitude, user, token
 
     if (!userLocation.result.field_staff || userLocation.result.field_staff === 'No') {
         if (!userLocation.result.latitude || !userLocation.result.longitude) {
-            return { status: false, msg: 'Location not found in Database. Please contact Administrator' };
-        } else {
+            return { data: { status: false, msg: 'Location not found in Database. Please contact Administrator' }, status: false };
+        } else {            
             const isAllowed = calculateDistance(
                 latitude ?? 0,
                 longitude ?? 0,
@@ -104,7 +105,7 @@ export const ClockInOut = async ({ image, type, latitude, longitude, user, token
                 userLocation.dept_head === 'Yes' ? 600 : 300,
             );
             if (!isAllowed) {
-                return { status: false, msg: 'Clocking not allowed outside the office.' };
+                return { data: { status: false, msg: 'Clocking not allowed outside the office.' }, status: false };
             }
         }
     }
@@ -125,9 +126,9 @@ const compressBase64Image = async ({ image, type, latitude, longitude, user, tok
             const base64Image = `data:image/jpeg;base64, ${base64}`;
             return sendImageToAPI(base64Image, type, latitude ?? 0, longitude ?? 0, user, token);
         }
-        return { status: false, msg: "No image provided" };
+        return { data: { status: false, msg: "No image provided" }, status: false };
     } catch (error: any) {
-        return { status: false, msg: error.message };
+        return { data: { status: false, msg: error.message }, status: false };
     }
 };
 
@@ -152,7 +153,7 @@ const sendImageToAPI = async (compressedBase64: string, clock_state: string, lat
         return { data: response.data, status: true };
 
     } catch (error: any) {
-        return { status: false, msg: error.message };
+        return { data: { status: false, msg: error.message }, status: false };
     }
 };
 
@@ -214,9 +215,9 @@ export const fetchClocking = async (IdOfUser: number, AuthToken: string): Promis
         if (response.data) {
             return { data: response.data, status: true };
         } else {
-            return { status: false, msg: 'Unexpected Error' };
+            return { data: { status: false, msg: 'Unexpected Error' }, status: false };
         }
     } catch (error: any) {
-        return { status: false, msg: error.message };
+        return { data: { status: false, msg: error.message }, status: false };
     }
 };

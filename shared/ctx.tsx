@@ -23,7 +23,7 @@ interface AuthState {
 const AuthContext = React.createContext<{
   signIn: (user: User) => void;
   signOut: () => void;
-  addClockingData: (data: ClockingData) => void;
+  addClockingData: (data: ClockingData | null) => void;
   addLeaveData: (data: Leave) => void;
   session: AuthState | null;
   isLoading: boolean;
@@ -66,7 +66,7 @@ export function SessionProvider({ children }: React.PropsWithChildren) {
     setSession(null);
   };
 
-  const addClockingData = (data: ClockingData) => {
+  const addClockingData = (data: ClockingData | null) => {
     if (session) {
       setSession({ ...session, clockData: data });
     }

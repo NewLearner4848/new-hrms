@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, StyleProp, ViewStyle, useColorScheme } from 'react-native';
 import { Text } from './Themed';
+import Colors from '@/constants/Colors';
 
 interface ButtonProps {
     handlePress: () => void;
@@ -11,11 +12,10 @@ interface ButtonProps {
 
 const Button: React.FC<ButtonProps> = ({ handlePress, text, backgroundColor, style }) => {
     const colorScheme = useColorScheme();
-    const isDarkMode = colorScheme === 'dark';
 
     const buttonStyle = [
         styles.button,
-        { backgroundColor: backgroundColor || (isDarkMode ? '#333' : 'green') }, // Default based on theme
+        { backgroundColor: backgroundColor || Colors[colorScheme ?? "light"].button }, // Default based on theme
         style,
     ];
 

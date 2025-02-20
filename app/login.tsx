@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Image, Alert, useColorScheme } from "react-native";
+import { StyleSheet, Image, useColorScheme } from "react-native";
 import { loginUser } from "@/actions/UserActions";
 import Button from "@/components/Button";
 import Loader from "@/components/Loader";
@@ -10,10 +10,10 @@ import { router } from "expo-router";
 import { View, Text } from "@/components/Themed";
 import Colors from "@/constants/Colors";
 import Footer from "@/components/Footer";
+import Toast from 'react-native-toast-message';
 
 const LoginScreen: React.FC = () => {
   const colorScheme = useColorScheme();
-  const isDarkMode = colorScheme === "dark";
 
   const [isChecked, setIsChecked] = useState(false);
   const [username, setUsername] = useState("");
@@ -35,14 +35,22 @@ const LoginScreen: React.FC = () => {
         signIn(userData.data.result);
         router.replace("/(auth)/(tabs)");
       } else {
-        Alert.alert(
-          "Login Failed",
-          userData?.data?.msg || "Invalid username or password."
-        );
+        Toast.show({
+          type: 'error',
+          text1: 'Login Failed',
+          text2: userData?.data?.msg || 'Invalid username or password.',
+          position: 'bottom',
+          visibilityTime: 3000,
+        });
       }
     } catch (error: any) {
-      // Type the error
-      Alert.alert("Error", error.message);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: error.message,
+        position: 'bottom',
+        visibilityTime: 3000,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -73,7 +81,7 @@ const LoginScreen: React.FC = () => {
           />
           <View style={styles.checkboxContainer}>
             <Checkbox
-              color={isDarkMode ? "#fff" : "#972928"} // Conditional checkbox color
+              color={Colors[colorScheme ?? "light"].textSecondary} // Conditional checkbox color
               style={styles.checkbox}
               value={isChecked}
               onValueChange={setIsChecked}
