@@ -1,61 +1,66 @@
-import React from 'react';
-import { StyleSheet, TextInput, TextInputProps, useColorScheme } from "react-native";
+import React from "react";
+import {
+  StyleSheet,
+  TextInput,
+  TextInputProps,
+  useColorScheme,
+} from "react-native";
+import Colors from "@/constants/Colors";
 
-interface InputFieldProps {
-    place_holder: string;
-    keyboard_type?: TextInputProps['keyboardType'];
-    value: string;
-    setValue: (text: string) => void;
-    return_key_type?: TextInputProps['returnKeyType'];
-    secure_text_entry?: boolean;
-    // Add other TextInput props as needed
+interface InputFieldProps extends TextInputProps {
+  place_holder: string;
+  keyboard_type?: TextInputProps["keyboardType"];
+  value: string;
+  setValue: (text: string) => void;
+  return_key_type?: TextInputProps["returnKeyType"];
+  secure_text_entry?: boolean;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
-    place_holder,
-    keyboard_type,
-    value,
-    setValue,
-    return_key_type,
-    secure_text_entry,
+  place_holder,
+  keyboard_type,
+  value,
+  setValue,
+  return_key_type,
+  secure_text_entry,
+  style,
+  ...rest
 }) => {
-    const colorScheme = useColorScheme();
-    const isDarkMode = colorScheme === 'dark';
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? "light"];
 
-    return (
-        <TextInput
-            style={[
-                styles.input,
-                isDarkMode && styles.inputDark, // Apply dark mode styles conditionally
-            ]}
-            placeholder={place_holder}
-            placeholderTextColor={isDarkMode ? '#888' : '#aaa'} // Dark mode placeholder color
-            keyboardType={keyboard_type}
-            returnKeyType={return_key_type}
-            value={value}
-            secureTextEntry={secure_text_entry}
-            onChangeText={setValue}
-        />
-    );
+  return (
+    <TextInput
+      style={[
+        styles.input,
+        {
+          borderColor: themeColors.border,
+          backgroundColor: themeColors.inputBackground,
+          color: themeColors.text,
+        },
+        style,
+      ]}
+      placeholder={place_holder}
+      placeholderTextColor={themeColors.textSecondary}
+      keyboardType={keyboard_type}
+      returnKeyType={return_key_type}
+      value={value}
+      secureTextEntry={secure_text_entry}
+      onChangeText={setValue}
+      {...rest}
+    />
+  );
 };
 
 const styles = StyleSheet.create({
-    input: {
-        borderColor: 'grey',
-        borderWidth: 1,
-        borderRadius: 4,
-        paddingHorizontal: 15,
-        paddingVertical: 15,
-        marginBottom: 30,
-        fontSize: 16,
-        color: 'black',  // Default text color (light mode)
-        backgroundColor: 'white', // Default background color (light mode)
-    },
-    inputDark: {  // Styles for dark mode
-        color: 'white', // Dark mode text color
-        backgroundColor: '#1e1e1e', // Dark mode background color (or similar)
-        borderColor: '#555', // Dark mode border color (optional)
-    },
+  input: {
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    fontSize: 16,
+    marginBottom: 20,
+  },
 });
 
 export default InputField;

@@ -4,6 +4,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { StatusBar } from 'expo-status-bar';
 import Toast from 'react-native-toast-message';
+import { toastConfig } from "@/components/Toast";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -42,7 +43,7 @@ export default function RootLayout() {
   return (
     <>
       <RootLayoutNav />
-      <Toast />
+      <Toast config={toastConfig} />
     </>
   );
 }

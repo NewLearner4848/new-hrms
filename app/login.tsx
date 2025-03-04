@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Image, useColorScheme } from "react-native";
+import {
+  StyleSheet,
+  Image,
+  useColorScheme,
+  TouchableOpacity,
+} from "react-native";
 import { loginUser } from "@/actions/UserActions";
 import Button from "@/components/Button";
 import Loader from "@/components/Loader";
@@ -10,15 +15,18 @@ import { router } from "expo-router";
 import { View, Text } from "@/components/Themed";
 import Colors from "@/constants/Colors";
 import Footer from "@/components/Footer";
-import Toast from 'react-native-toast-message';
+import Toast from "react-native-toast-message";
+import { Ionicons } from "@expo/vector-icons";
 
 const LoginScreen: React.FC = () => {
   const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? "light"];
 
   const [isChecked, setIsChecked] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { session, signIn } = useSession();
 
   useEffect(() => {
@@ -33,23 +41,24 @@ const LoginScreen: React.FC = () => {
       const userData = await loginUser(username, password);
       if (userData && userData?.data?.status && userData?.data?.result) {
         signIn(userData.data.result);
+        Toast.show({
+          type: "success",
+          text1: "Success",
+          text2: userData?.data?.msg || "Successfully Logged in!",
+        });
         router.replace("/(auth)/(tabs)");
       } else {
         Toast.show({
-          type: 'error',
-          text1: 'Login Failed',
-          text2: userData?.data?.msg || 'Invalid username or password.',
-          position: 'bottom',
-          visibilityTime: 3000,
+          type: "error",
+          text1: "Login Failed",
+          text2: userData?.data?.msg || "Invalid username or password.",
         });
       }
     } catch (error: any) {
       Toast.show({
-        type: 'error',
-        text1: 'Error',
+        type: "error",
+        text1: "Error",
         text2: error.message,
-        position: 'bottom',
-        visibilityTime: 3000,
       });
     } finally {
       setIsLoading(false);
@@ -58,12 +67,17 @@ const LoginScreen: React.FC = () => {
 
   return (
     <>
-      <View style={styles.container}>
-        <View style={styles.box}>
+      <View
+        style={[styles.container, { backgroundColor: themeColors.background }]}
+      >
+        <View
+          style={[styles.box, { backgroundColor: themeColors.cardBackground }]}
+        >
           <Image
             source={require("@/assets/sabar_logo.png")}
             style={styles.logo}
           />
+
           <InputField
             place_holder="Username*"
             keyboard_type="default"
@@ -71,31 +85,54 @@ const LoginScreen: React.FC = () => {
             setValue={setUsername}
             return_key_type="next"
           />
-          <InputField
-            place_holder="Password*"
-            keyboard_type="default"
-            value={password}
-            setValue={setPassword}
-            return_key_type="done"
-            secure_text_entry={true}
-          />
+
+          <View
+            style={[
+              styles.passwordContainer,
+              { borderColor: themeColors.border },
+            ]}
+          >
+            <InputField
+              style={styles.passwordInput}
+              place_holder="Password*"
+              keyboard_type="default"
+              value={password}
+              setValue={setPassword}
+              return_key_type="done"
+              secure_text_entry={!isPasswordVisible}
+            />
+            <TouchableOpacity
+              onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+            >
+              <Ionicons
+                name={isPasswordVisible ? "eye-off" : "eye"}
+                size={24}
+                color={themeColors.textSecondary}
+                style={styles.eyeIcon}
+              />
+            </TouchableOpacity>
+          </View>
+
           <View style={styles.checkboxContainer}>
             <Checkbox
-              color={Colors[colorScheme ?? "light"].textSecondary} // Conditional checkbox color
+              color={themeColors.primary}
               style={styles.checkbox}
               value={isChecked}
               onValueChange={setIsChecked}
             />
-            <Text>Remember me</Text>
+            <Text style={{ color: themeColors.textSecondary }}>
+              Remember me
+            </Text>
           </View>
+
           <Button
-            text={"Sign In"}
+            text="Sign In"
             handlePress={handleLogin}
-            backgroundColor={Colors[colorScheme ?? "light"].button}
+            backgroundColor={themeColors.primary}
           />
         </View>
-        {isLoading && <Loader />}
       </View>
+      {isLoading && <Loader />}
       <Footer />
     </>
   );
@@ -103,27 +140,49 @@ const LoginScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    flex: 1,
+    paddingHorizontal: 20,
   },
   box: {
     width: "100%",
-    padding: 20,
+    maxWidth: 400,
+    padding: 25,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 5,
   },
-
   logo: {
     width: "100%",
-    height: 60,
-    marginBottom: 40,
+    marginBottom: 30,
     resizeMode: "contain",
+    alignSelf: "center",
   },
-
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderRadius: 8,
+    marginBottom: 15,
+  },
+  passwordInput: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    fontSize: 16,
+    marginBottom: 0,
+  },
+  eyeIcon: {
+    padding: 10,
+  },
   checkboxContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 30,
-    paddingHorizontal: 5,
+    marginBottom: 20,
   },
   checkbox: {
     marginRight: 10,

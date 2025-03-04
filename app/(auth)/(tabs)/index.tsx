@@ -16,13 +16,16 @@ import { useRouter } from "expo-router";
 import { useSession } from "@/shared/ctx";
 import UserCard from "@/components/UserCard";
 import Toast from 'react-native-toast-message';
+import Colors from "@/constants/Colors";
 
 const HomeScreen: React.FC = () => {
   const colorScheme = useColorScheme();
-  const isDarkMode = colorScheme === "dark";
   const [refreshing, setRefreshing] = useState(false);
   const { session, addClockingData } = useSession();
   const router = useRouter();
+
+  const themeColors = Colors[colorScheme ?? 'light'];
+  const isClockedIn = session?.clockData?.clock_in && !session?.clockData?.clock_out;
 
   const fetchClockingData = async () => {
     try {
@@ -43,8 +46,6 @@ const HomeScreen: React.FC = () => {
           type: 'error',
           text1: 'Error',
           text2: clockingStatus.msg || 'Failed to fetch clocking data.',
-          position: 'bottom',
-          visibilityTime: 3000,
         });
       }
     } catch (error) {
@@ -82,8 +83,6 @@ const HomeScreen: React.FC = () => {
         Toast.show({
           type: 'error',
           text1: 'Authentication Failed',
-          position: 'bottom',
-          visibilityTime: 3000,
         });
       }
     } catch (error: any) {
@@ -91,8 +90,6 @@ const HomeScreen: React.FC = () => {
         type: 'error',
         text1: 'Authentication Failed',
         text2: error.message,
-        position: 'bottom',
-        visibilityTime: 3000,
       });
     }
   };
@@ -131,24 +128,8 @@ const HomeScreen: React.FC = () => {
           />
         </View>
         <Button
-          backgroundColor={
-            !session?.clockData ||
-            !session?.clockData.clock_in ||
-            (session?.clockData.clock_in && session?.clockData.clock_out)
-              ? isDarkMode
-                ? "#005000"
-                : "green"
-              : isDarkMode
-              ? "#8b0000"
-              : "red"
-          } // Conditional colors
-          text={
-            !session?.clockData ||
-            !session?.clockData.clock_in ||
-            (session?.clockData.clock_in && session?.clockData.clock_out)
-              ? "Clock In"
-              : "Clock Out"
-          }
+          backgroundColor={isClockedIn ? themeColors.danger : themeColors.success}
+          text={isClockedIn ? 'Clock Out' : 'Clock In'}
           handlePress={handleAuthentication}
         />
       </ScrollView>

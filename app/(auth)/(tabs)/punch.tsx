@@ -38,8 +38,6 @@ const ClockIn: React.FC = () => {
           type: 'error',
           text1: 'Error',
           text2: 'Location might be manipulated. Please check.',
-          position: 'bottom',
-          visibilityTime: 3000,
         });
         router.back();
         return;
@@ -51,8 +49,6 @@ const ClockIn: React.FC = () => {
         type: 'error',
         text1: 'Location Error',
         text2: 'Something went wrong. Please try again.',
-        position: 'bottom',
-        visibilityTime: 3000,
       });
       router.back();
     } finally {
@@ -107,8 +103,6 @@ const ClockIn: React.FC = () => {
         type: 'error',
         text1: 'Error',
         text2: 'Camera is not ready.',
-        position: 'bottom',
-        visibilityTime: 3000,
       });
       return;
     }
@@ -118,8 +112,6 @@ const ClockIn: React.FC = () => {
         type: 'error',
         text1: 'Error',
         text2: 'Waiting for location. Please try again.',
-        position: 'bottom',
-        visibilityTime: 3000,
       });
       return;
     }
@@ -143,8 +135,6 @@ const ClockIn: React.FC = () => {
             type: 'success',
             text1: 'Success',
             text2: response?.data?.msg || 'Clocking successful.',
-            position: 'bottom',
-            visibilityTime: 3000,
           });
           router.back();
         } else {
@@ -152,8 +142,6 @@ const ClockIn: React.FC = () => {
             type: 'error',
             text1: 'Error',
             text2: response?.data?.msg || 'Clocking failed.',
-            position: 'bottom',
-            visibilityTime: 3000,
           });
         }
       }
@@ -162,8 +150,6 @@ const ClockIn: React.FC = () => {
         type: 'error',
         text1: 'Camera Error',
         text2: error.message,
-        position: 'bottom',
-        visibilityTime: 3000,
       });
     } finally {
       setIsLoading(false);
